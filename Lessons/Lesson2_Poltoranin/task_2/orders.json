@@ -41,6 +41,13 @@
             "price": 345,
             "buyer": "State",
             "date": "2021-08-26 11:01:36.121302"
+        },
+        {
+            "item": "people",
+            "quantity": 0,
+            "price": 345,
+            "buyer": "State",
+            "date": "2021-08-26 13:35:09.170590"
         }
     ]
 }
