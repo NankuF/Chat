@@ -27,11 +27,6 @@ import chardet
 
 os.chdir(os.getcwd())
 
-"""
-NOTE:   Вопрос с chardet в функции decoding_in_utf_8 не решен,
-        он не точно определяет кодировку, в результате теряем некоторые символы в кириллице.
-"""
-
 
 def decoding_in_utf_8(path: [str]) -> [str]:
     """
@@ -54,7 +49,7 @@ def decoding_in_utf_8(path: [str]) -> [str]:
             codec = chardet.detect(data)
             file_in_utf_8 = data.decode(codec['encoding']).encode('utf-8').decode('utf-8')
 
-        with open(new_lst_files[count],'w') as nf:
+        with open(new_lst_files[count], 'w') as nf:
             nf.write(file_in_utf_8)
         count += 1
     return new_lst_files
@@ -109,7 +104,7 @@ def write_files_to_csv(file: [str], pattern: [r'str']):
 
 if __name__ == '__main__':
     this_dir = os.getcwd()
-    os.chdir(this_dir + '/task_1')    # система глючит и не определяет что я нахожусь в /task_1
+    os.chdir(this_dir + '/task_1')  # система глючит и не определяет что я нахожусь в /task_1
     path_files = ['info_1.txt', 'info_2.txt', 'info_3.txt']
     pattern = [r'^Изготовитель системы*.*', r'^Название*.*', r'^Код продукта*.*', r'^Тип системы*.*']
     write_files_to_csv(path_files, pattern)
