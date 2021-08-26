@@ -45,18 +45,17 @@ def decoding_in_utf_8(path: [str]) -> [str]:
         new_file = f'{new_file[0]}_utf8{new_file[1]}'
         new_lst_files.append(new_file)
 
-    # открываем каждый файл и построчно перекодируем в utf-8 с записью в новый файл
+    # открываем каждый файл и  перекодируем в utf-8 с записью в новый файл.
+    # если перекодировать построчно, то chadret не всегда верно определяет кодировку.
     count = 0
     while count < len(new_lst_files):
         with open(path[count], 'rb') as f:
-            for line in f:
-                # dct_coding = chardet.detect(line)  # не совсем точно определяет кодировку. тем самым ломая символы
-                # print(dct_coding)
-                # убираем  line.decode(dct_coding['encoding']) тк неточно определена кодировка модулем chardet
-                line = line.decode('cp1251').encode('utf-8')
-                line = line.decode('utf-8')
-                with open(new_lst_files[count], 'a') as nf:
-                    nf.write(line)
+            data = f.read()
+            codec = chardet.detect(data)
+            file_in_utf_8 = data.decode(codec['encoding']).encode('utf-8').decode('utf-8')
+
+        with open(new_lst_files[count],'w') as nf:
+            nf.write(file_in_utf_8)
         count += 1
     return new_lst_files
 
@@ -111,10 +110,6 @@ def write_files_to_csv(file: [str], pattern: [r'str']):
 if __name__ == '__main__':
     this_dir = os.getcwd()
     os.chdir(this_dir + '/task_1')    # система глючит и не определяет что я нахожусь в /task_1
-    # directory = os.popen('ls').readlines()
-    # print(directory)
-    # print(os.getcwd())
-    # os.getcwd()
     path_files = ['info_1.txt', 'info_2.txt', 'info_3.txt']
     pattern = [r'^Изготовитель системы*.*', r'^Название*.*', r'^Код продукта*.*', r'^Тип системы*.*']
     write_files_to_csv(path_files, pattern)
