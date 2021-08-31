@@ -1,6 +1,8 @@
 import json
 import socket
-from common.utils import send_msg, recv_msg, console_reader
+from common.utils import send_msg, recv_msg, console_reader,process_client_message
+
+
 
 
 def main():
@@ -26,11 +28,11 @@ def main():
     while True:
         client, client_address = sock.accept()
         try:
-            # отправляем клиенту сообщение
-            send_msg(client, {'server_msg': 'You connect!'})
             # получаем от клиента сообщение
             msg_to_client = recv_msg(client)
-            print(msg_to_client)
+            response = process_client_message(msg_to_client)
+            print(response)
+            send_msg(client, response)
             client.close()
         except (ValueError, json.JSONDecodeError):
             print('Принято некорретное сообщение от клиента.')
