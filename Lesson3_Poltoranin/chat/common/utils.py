@@ -2,7 +2,24 @@ import json
 from socket import socket
 import sys
 
-from common.variables import DEFAULT_PORT, DEFAULT_ADDRESS, ENCODING, MAX_PACKAGE_LENGTH
+from .variables import DEFAULT_PORT, DEFAULT_ADDRESS, ENCODING, MAX_PACKAGE_LENGTH, ACTION, USER, RESPONSE, PRESENCE, \
+    ACCOUNT_NAME, TIME, ERROR
+
+
+def process_client_message(message):
+    '''
+    Обработчик сообщений от клиентов, принимает словарь -
+    сообщение от клинта, проверяет корректность,
+    возвращает словарь-ответ для клиента
+    '''
+    if ACTION in message and message[ACTION] == PRESENCE and TIME in message \
+            and USER in message and message[USER][ACCOUNT_NAME] == 'Guest':
+        return {RESPONSE: 200}
+    return {
+        RESPONSE: 400,
+        ERROR: 'Bad Request'
+    }
+
 
 
 def console_reader() -> (int, int):
