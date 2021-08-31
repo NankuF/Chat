@@ -2,16 +2,15 @@ import socket
 import time
 import json
 
-from common.utils import recv_msg
-from common.utils import send_msg, console_reader
+from common.utils import send_msg, console_reader, recv_msg
 from common.variables import ACTION, PRESENCE, TIME, USER, ACCOUNT_NAME, RESPONSE, ERROR
 
 
 def main():
     def create_presence(account_name='Guest'):
-        '''
+        """
         Функция генерирует ответ о присутствии клиента
-        '''
+        """
         # {'action': 'presence', 'time': 1573760672.167031, 'user': {'account_name': 'Guest'}}
         out = {
             ACTION: PRESENCE,
@@ -23,11 +22,9 @@ def main():
         return out
 
     def process_ans(message):
-        '''
-        Функция разбирает ответ сервера
-        :param message:
-        :return:
-        '''
+        """
+        Функция разбирает ответ сервера и возвращает 200 либо 400
+        """
         if RESPONSE in message:
             if message[RESPONSE] == 200:
                 return '200 : OK'
@@ -39,9 +36,11 @@ def main():
     # Cоздаем сокет-клиент
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((server_address, server_port))
+    # создаем сообщение, что мы онлайн
     msg_to_server = create_presence()
     send_msg(sock, msg_to_server)
     try:
+        # парсим ответ сервера, возвращая 200 или 400
         answer = process_ans(recv_msg(sock))
         print(answer)
     except (ValueError, json.JSONDecodeError):

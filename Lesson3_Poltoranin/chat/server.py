@@ -1,8 +1,6 @@
 import json
 import socket
-from common.utils import send_msg, recv_msg, console_reader,process_client_message
-
-
+from common.utils import send_msg, recv_msg, console_reader, process_client_message
 
 
 def main():
@@ -30,6 +28,7 @@ def main():
         try:
             # получаем от клиента сообщение
             msg_to_client = recv_msg(client)
+            # Проверям, что сообщение клиента соотв. протоколу JIM и формируем ответ
             response = process_client_message(msg_to_client)
             print(response)
             send_msg(client, response)
