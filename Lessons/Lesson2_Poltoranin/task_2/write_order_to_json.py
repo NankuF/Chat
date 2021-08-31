@@ -11,10 +11,10 @@
 import datetime
 import json
 
-item = 'people'
+item = 'Пипл'
 quantity = 0
 price = 345
-buyer = 'State'
+buyer = 'Штат'
 date = str(datetime.datetime.now())
 
 
