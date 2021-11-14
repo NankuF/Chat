@@ -4,7 +4,7 @@ import subprocess
 import ipaddress
 import socket
 
-command = ['ping', ' -c', ' 4']
+
 domains = ['8.8.8.8', '10.10.10.10', 'yandex.ru']
 
 
@@ -19,8 +19,9 @@ def get_domains_ips(list_ips: list) -> list:
     return ipv4_address_list
 
 
-def host_ping(command, func):
-    get_ips = func
+def host_ping(ip_addr):
+    command = ['ping', ' -c', ' 4']
+    get_ips = get_domains_ips(ip_addr)
     result = []
     for address in get_ips:
         command = ''.join(command)
@@ -28,7 +29,10 @@ def host_ping(command, func):
         result.append(f'{command} {addr}')
 
     data = []
+    n = 1
     for r in result:
+        print(f'Ping_{n}_address')
+        n += 1
         process = subprocess.Popen(r.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
         data.append(process.communicate())
 
@@ -49,4 +53,4 @@ def host_ping(command, func):
 
 
 if __name__ == '__main__':
-    host_ping(command, get_domains_ips(domains))
+    host_ping(domains)
