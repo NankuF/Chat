@@ -3,6 +3,7 @@ import pprint
 import subprocess
 import ipaddress
 import socket
+from tabulate import tabulate
 
 domains = ['8.8.8.8', '10.10.10.10', 'yandex.ru']
 
@@ -18,7 +19,8 @@ def get_domains_ips(list_ips: list) -> list:
     return ipv4_address_list
 
 
-def host_ping(ip_addr, is_str: bool = False):
+def host_ping(ip_addr, is_str: bool = False, table=False):
+    """Ф-я пингует список"""
     command = ['ping', ' -c', ' 4']
     if not is_str:
         get_ips = get_domains_ips(ip_addr)
@@ -33,12 +35,15 @@ def host_ping(ip_addr, is_str: bool = False):
     data = []
     n = 1
     for r in result:
-        print(f'Ping_{n}_address')
+        # print(f'Ping_{n}_address')
         n += 1
         process = subprocess.Popen(r.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
         data.append(process.communicate())
 
     # print(data)
+    reachable = []
+    unreachable = []
+    columns = ['reachable', 'unreachable']
     for i in range(len(data)):
         # достаем ip
         ip = data[i][0].split(' ')[1]
@@ -46,23 +51,35 @@ def host_ping(ip_addr, is_str: bool = False):
         received = data[i][0].split(',')
         if 'received' in received[-4] or 'received' in received[-3]:
             received = received[1].split()[0]
-            if int(received) > 0:
-                try:
-                    print(f'«Узел {ip} | {socket.gethostbyaddr(ip)[0]} доступен»')
-                except socket.herror:
-                    print(f'«Узел {ip} доступен»')
+            if not table:
+                if int(received) > 0:
+                    try:
+                        print(f'«Узел {ip} | {socket.gethostbyaddr(ip)[0]} доступен»')
+                    except socket.herror:
+                        print(f'«Узел {ip} доступен»')
+                else:
+                    try:
+                        print(f'«Узел {ip} | {socket.gethostbyaddr(ip)[0]} недоступен»')
+                    except socket.herror:
+                        print(f'«Узел {ip} недоступен»')
             else:
-                try:
-                    print(f'«Узел {ip} | {socket.gethostbyaddr(ip)[0]} недоступен»')
-                except socket.herror:
-                    print(f'«Узел {ip} недоступен»')
+
+                if int(received) > 0:
+                    reachable.append(ip)
+                else:
+                    unreachable.append(ip)
+    lst = []
+    lst.append(reachable)
+    lst.append(unreachable)
+    print(tabulate(lst, headers=columns))
 
 
 range_ip = ['192.168.0.0', '192.168.0.3']
 
 
-def host_range_ping(ip_list):
-    """Известные проблемы: игнорирует первый адрес, переходя сразу к следующему"""
+def host_range_ping(ip_list, table=False):
+    """ Ф-я пингует диапазон ip адресов, увеличивая первый ip до последнего.
+    Известные проблемы: игнорирует первый адрес, переходя сразу к следующему"""
     range_ip_address = []
 
     # делаем адреса объектами ф-ии ip_address
@@ -79,9 +96,15 @@ def host_range_ping(ip_list):
             ip1 += 1
             range_str_ip.append(str(ip1))
 
-    host_ping(range_str_ip, is_str=True)
+    host_ping(range_str_ip, is_str=True, table=table)
+
+
+def host_range_ping_tab():
+    """Ф-я основана на ф-ии host_range_ping(), но возвращает рез-т в табличном виде"""
+    host_range_ping(range_ip, table=True)
 
 
 if __name__ == '__main__':
-    host_ping(domains)
-    host_range_ping(ip_list=range_ip)
+    # host_ping(domains)
+    # host_range_ping(ip_list=range_ip)
+    host_range_ping_tab()
